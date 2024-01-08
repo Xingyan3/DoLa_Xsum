@@ -1,3 +1,57 @@
+DoLa in text summarization!
+===
+## Introduction:
+
+Recent advancements in Large Language Models (LLMs) have revolutionized the field of artificial intelligence, especially in natural language processing. However, a significant challenge persists in the form of inaccuracies and hallucinations in text generation. This project is inspired by the innovative approach of Decoding by Contrasting Layers (DoLa), as explored in the paper “DoLa: Decoding by Contrasting Layers Improves Factuality in Large Language Models”. While DoLa demonstrates a way to reduce such errors, my project aims to migrate upon this foundation. In my project, I migrated this innovative approach to text summarization, based on the Xsum dataset and an encoder-decoder model “T5”.
+
+## Method:
+
+Recent language models consist of an embedding layer, N stacked transformer layers, and an affine layer φ(·) for predicting the next word distribution. The generated result will be processed by each transformer layer successively where the final output is from the mature layer. But, in DoLa, they proposed a variable called the early exit layer, which corresponded to the pre-mature layer. They obtain the outputs from the early exit layer (pre-mature layer) is called the hidden state. And implement φ(·) for each hidden state for predicting the pre-mature layer’s word distribution. To calculate the final answer, they compute the Jensen-Shannon Divergence (JSD) between the early exiting output distributions and the final layer output distribution and use a greedy algorithm to find a layer that has the most divergence between the mature layer and several pre-mature layers. After finding a layer with the most contrast, they used a logarithmic function to amplify the final output from DoLa.
+
+## EXPERIMENTS:
+
+In this project, we extend the Decoding by Contrasting Layers (DoLa) approach, previously implemented in decoder-based models like LLaMA and GPT, to enhance factual content in language tasks. We adapt DoLa for integration with the T5 model, an encoder-decoder framework, focusing on the summarization task in Xsum. Our methodology involves a comparative analysis using the Rouge metric to evaluate performance between the T5 baseline and its adaptation with DoLa. This study aims to not only measure the effectiveness of DoLa in improving summarization accuracy but also to explore the underlying mechanisms contributing to these improvements.
+
+## Implementation:
+
+To adapt the code with DoLa, they directly made some changes in the “transformers” package and used a customized “transformers” package. They changed the ‘forward’ function code in the “transformers” package to get the pre-mature layer’s word distribution. Add φ(·) for each hidden state to let them output word distribution. Then, they change the “greedy decoder” function code in the “utils” file which is also included in the “transformers” package. This greedy decoder achieves the goals of layer selection. 
+
+In my implementation phase, I incorporated the DoLa method into the T5 model, focusing on layer utilization analysis. I developed an entry script to seamlessly load the T5 and LLaMA models along with the Xsum dataset. This setup involved configuring various parameters, utilizing the 'generate' function for output generation, and subsequently evaluating these outputs using the Rouge metric. This approach provided a structured framework to assess the model's performance and the efficacy of the DoLa integration in the context of language summarization tasks.
+
+## Results:
+
+I evaluate my model within the first 100 test data from Xsum dataset and use the model across LLaMA-7B, Flan-T5-base, Flan-T5-xxl compared by baseline and DoLa. The results show that LLaMA with DoLa has a better performance and Flan-T5 with DoLa cannot has a better performance compared to the baseline. 
+
+![image](https://github.com/Xingyan3/DoLa_Xsum/assets/114642583/52fccdde-ced1-4981-83df-648eeb093d24)
+
+
+## Analysis:
+
+To find the reason why Flan-T5 with DoLa cannot have a better performance, I did some analysis to find out if Flan-T5 with DoLa performs some similar features shown in the DoLa paper. The first observation from the paper is factual knowledge tends to have a higher divergence in higher layers. This pattern indicates that the model is still changing its predictions in the last few layers, and potentially injecting more factual knowledge into the predictions. 
+
+<img width="406" alt="image" src="https://github.com/Xingyan3/DoLa_Xsum/assets/114642583/7462b907-c22e-42ce-8c65-c6330ac4b9ca">
+
+
+![image](https://github.com/Xingyan3/DoLa_Xsum/assets/114642583/05d8ad65-5051-4e00-a840-5a98fdcb2a82)
+
+In my experiment, I didn’t find the similar trends shown above.
+
+## Conclusion:
+
+This project explored the integration of the Decoding by Contrasting Layers (DoLa) method into the T5 model, specifically targeting the Xsum summarization task. My implementation involved modifying the 'transformers' package to adapt the T5 and LLaMA models in the decoder for DoLa's contrasting layer approach. The comparative performance, assessed using the Rouge metric, revealed mixed results. While the LLaMA model showed improved performance with DoLa, the Flan-T5 adaptations did not yield better performance compared to their baselines. This outcome suggests that the effectiveness of DoLa may vary across different models and tasks. In addition, T5 is an encoder-decoder-based model. Thus, if we make some changes in the encoder, the results and conclusions may reverse.
+
+# References:
+
+[1] DoLa: Decoding by Contrasting Layers Improves Factuality in Large Language Models
+
+[2] ROUGE: A Package for Automatic Evaluation of Summaries
+
+[3] Scaling Instruction-Finetuned Language Models
+
+[4] https://huggingface.co/docs/transformers/index
+
+[5] LLaMA: Open and Efficient Foundation Language Models
+
 DoLa: Decoding by Contrasting Layers Improves Factuality in Large Language Models
 ===
 
